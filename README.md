@@ -1,3 +1,3 @@
-Todo List App 
-Frontend - React
+Todo List App |
+Frontend - React |
 Backend - Python Flask & MongoDB
