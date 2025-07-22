@@ -5,7 +5,6 @@
 # The application is configured to run on a specified port and can be deployed on platforms like Heroku or Render.
 # Import necessary libraries
 
-# app.py - Updated with UUID-based user isolation
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_pymongo import PyMongo
@@ -21,7 +20,7 @@ app = Flask(__name__)
 CORS(app)
 
 # MongoDB Configuration
-app.config["MONGO_URI"] = os.environ.get("MONGO_URI", "mongodb://localhost:27017/todoapp")
+app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 mongo = PyMongo(app)
 
 # Helper function to convert MongoDB ObjectId to string

@@ -7,7 +7,7 @@
 // - PUT /api/todos/<id>: Update a todo by ID
 // - DELETE /api/todos/<id>: Delete a todo by ID
 
-// TodoApp.jsx - Updated with UUID-based user isolation
+// TodoApp.jsx - Fixed with correct API URL
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TodoApp.css';
@@ -22,6 +22,9 @@ function TodoApp() {
   const [editText, setEditText] = useState('');
   const [openDropdown, setOpenDropdown] = useState(null);
   const [userId, setUserId] = useState(null);
+
+  // API Base URL - Use localhost for browser requests
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   // Generate or retrieve user ID
   useEffect(() => {
@@ -44,7 +47,7 @@ function TodoApp() {
   const fetchTodos = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/todos?user_id=${userId}`);
+      const response = await axios.get(`${API_BASE_URL}/api/todos?user_id=${userId}`);
       setTodos(response.data);
       setLoading(false);
     } catch (error) {
@@ -58,7 +61,7 @@ function TodoApp() {
     if (!newTodo.trim() || !userId) return;
     
     try {
-      const response = await axios.post('/api/todos', { 
+      const response = await axios.post(`${API_BASE_URL}/api/todos`, { 
         title: newTodo, 
         completed: false,
         user_id: userId 
@@ -72,7 +75,7 @@ function TodoApp() {
 
   const toggleComplete = async (id, completed) => {
     try {
-      await axios.put(`/api/todos/${id}`, { 
+      await axios.put(`${API_BASE_URL}/api/todos/${id}`, { 
         completed: !completed,
         user_id: userId 
       });
@@ -86,7 +89,7 @@ function TodoApp() {
 
   const deleteTodo = async (id) => {
     try {
-      await axios.delete(`/api/todos/${id}?user_id=${userId}`);
+      await axios.delete(`${API_BASE_URL}/api/todos/${id}?user_id=${userId}`);
       setTodos(todos.filter(todo => todo._id !== id));
     } catch (error) {
       console.error('Error deleting todo:', error);
@@ -113,7 +116,7 @@ function TodoApp() {
     
     try {
       console.log('Sending update request...');
-      const response = await axios.put(`/api/todos/${id}`, { 
+      const response = await axios.put(`${API_BASE_URL}/api/todos/${id}`, { 
         title: editText.trim(),
         user_id: userId 
       });
@@ -161,7 +164,7 @@ function TodoApp() {
     
     try {
       // Use batch delete endpoint
-      await axios.delete('/api/todos/batch', {
+      await axios.delete(`${API_BASE_URL}/api/todos/batch`, {
         data: { 
           ids: selectedTasks,
           user_id: userId 
