@@ -1,27 +1,32 @@
-#1. Build stage
+# ---------- Build Stage ----------
 FROM node:22-slim AS build 
 
-#2. Set working directory
 WORKDIR /app
 
-#3. Copy package.json and install dependencies
+# Copy package files first
 COPY package*.json ./
-RUN npm install 
 
-#4. Copy all source files
+# Install ALL dependencies for build
+RUN npm install
+
+# Copy source code
 COPY . .
 
-#5. Build the app
+# Build React app
 RUN npm run build
 
-#6. Production stage
+# ---------- Production Stage ----------
 FROM nginx:alpine
 
-#7. Copy build output to nginx public folder
+# Copy build output to Nginx HTML folder
 COPY --from=build /app/build /usr/share/nginx/html
 
-#8. expose port 80
+# Remove default Nginx config and add our own (for React Router support)
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d
+
+# Expose port 80
 EXPOSE 80
 
-#9. Start nginx server
+# Start nginx server
 CMD ["nginx", "-g", "daemon off;"]
