@@ -1,17 +1,19 @@
-# 1. Use official Python image
+# 1. Use official lightweight Python image
 FROM python:3.12-slim
 
-# 2. Set working directory inside the container
+# 2. Set working directory
 WORKDIR /app
 
-# 3. Copy everything from your current backend folder to /app in container
-COPY . /app
-
-# 4. Install dependencies from requirements.txt
+# 3. Install dependencies first (better layer caching)
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Expose the port that Flask uses 
+# 4. Copy the rest of the backend code
+COPY . .
+
+# 5. Expose Flask port
 EXPOSE 5000
 
-# 6. Run the Flask app
-CMD ["python", "app.py"]
+# 6. Use Gunicorn as WSGI production server
+# "app:app" means -> app.py file and app = Flask(__name__) inside it
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
